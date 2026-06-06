@@ -70,8 +70,8 @@ When I'm not coding, I'm sketching characters or exploring game worlds.`,
     'Gododt',
     'C#',
     'PHP',
-    'MySQL'
-    'Java',
+    'MySQL',
+    'Java'
   ],
 
   specializations: [
