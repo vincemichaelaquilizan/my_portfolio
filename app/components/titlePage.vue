@@ -4,7 +4,6 @@ import ComicBorder from './reuse/comicBorder.vue'
 import LabelPageTitle from './reuse/labelPageTitle.vue'
 import { HERO } from '../content.config.js'
 
-// Animated typewriter for roles
 const displayedRole = ref(HERO.roles[0])
 let roleIndex = 0
 let charIndex = 0
@@ -39,20 +38,23 @@ onUnmounted(() => clearTimeout(timer))
 
 <template>
   <section id="home" class="hero bg-hero">
-    <!-- Background decorative boxes -->
     <div class="hero__bg-box hero__bg-box--left"></div>
     <div class="hero__bg-box hero__bg-box--right"></div>
 
-    <!-- Airplane -->
-    <img class="hero__airplane" :src="HERO.airplaneImage" alt="" aria-hidden="true" />
+    <!-- Airplane with flight path + trail -->
+    <div class="hero__airplane-wrap">
+      <div class="hero__trail"></div>
+      <img class="hero__airplane" :src="HERO.airplaneImage" alt="" aria-hidden="true" />
+    </div>
 
-    <!-- Character / Avatar -->
+    <!-- Clouds -->
+    <div class="hero__cloud hero__cloud--1"></div>
+    <div class="hero__cloud hero__cloud--2"></div>
+    <div class="hero__cloud hero__cloud--3"></div>
+
     <img class="hero__character" :src="HERO.profileImage" alt="Portfolio avatar" />
-
-    <!-- City silhouette -->
     <img class="hero__city" :src="HERO.cityImage" alt="" aria-hidden="true" />
 
-    <!-- Main text content -->
     <div class="hero__content">
       <span class="hero__year">{{ HERO.year }}</span>
       <h1 class="hero__title">{{ HERO.heading }}</h1>
@@ -62,13 +64,11 @@ onUnmounted(() => clearTimeout(timer))
       </div>
     </div>
 
-    <!-- Manga dots -->
     <ComicBorder />
   </section>
 </template>
 
 <style lang="scss" scoped>
-// ─── Layout ──────────────────────────────────
 .hero {
   position: relative;
   width: 100%;
@@ -79,7 +79,6 @@ onUnmounted(() => clearTimeout(timer))
   align-items: center;
 }
 
-// ─── Content ─────────────────────────────────
 .hero__content {
   position: relative;
   z-index: 5;
@@ -130,18 +129,65 @@ onUnmounted(() => clearTimeout(timer))
   animation: blink 1s step-end infinite;
 }
 
-// ─── Images ──────────────────────────────────
-.hero__airplane {
+// ─── Airplane + trail wrapper ──────────────────
+.hero__airplane-wrap {
   position: absolute;
-  top: 10%;
-  left: 22%;
-  mix-blend-mode: color-dodge;
-  opacity: 0.55;
-  z-index: 2;
+  top: 16%;
+  left: -22%;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  animation: flyAcross 9s cubic-bezier(0.25, 0.1, 0.55, 1) infinite;
   pointer-events: none;
-  animation: float 6s ease-in-out infinite;
 }
 
+.hero__airplane {
+  width: clamp(80px, 10vw, 140px);
+  mix-blend-mode: color-dodge;
+  opacity: 0.85;
+  filter: drop-shadow(0 4px 18px rgba(232,184,75,0.35));
+  // slight nose-down pitch
+  transform: rotate(-4deg);
+}
+
+.hero__trail {
+  width: 120px;
+  height: 3px;
+  margin-right: -6px;
+  background: linear-gradient(to left, rgba(255,255,255,0.55), transparent);
+  border-radius: 999px;
+  filter: blur(1.5px);
+}
+
+// ─── Soft clouds ───────────────────────────────
+.hero__cloud {
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  pointer-events: none;
+  filter: blur(18px);
+  z-index: 1;
+}
+
+.hero__cloud--1 {
+  width: 280px; height: 80px;
+  top: 12%; left: 5%;
+  animation: driftCloud 22s linear infinite;
+}
+
+.hero__cloud--2 {
+  width: 200px; height: 55px;
+  top: 22%; left: 55%;
+  animation: driftCloud 30s linear 8s infinite;
+}
+
+.hero__cloud--3 {
+  width: 160px; height: 45px;
+  top: 30%; left: 30%;
+  animation: driftCloud 26s linear 3s infinite;
+}
+
+// ─── Characters + city ────────────────────────
 .hero__character {
   position: absolute;
   bottom: 0;
@@ -168,28 +214,39 @@ onUnmounted(() => clearTimeout(timer))
   pointer-events: none;
 }
 
-// ─── Decorative bg boxes ──────────────────────
 .hero__bg-box {
   position: absolute;
   width: 50rem;
   height: 50rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255,255,255,0.04);
   z-index: 1;
 
   &--left {
-    top: 50%;
-    left: 0;
+    top: 50%; left: 0;
     transform: translate(-50%, -50%) rotate(33.5deg) scaleX(5);
   }
 
   &--right {
-    top: 50%;
-    left: 100%;
+    top: 50%; left: 100%;
     transform: translate(-50%, -50%) rotate(145.5deg) scaleX(5);
   }
 }
 
-// ─── Animations ──────────────────────────────
+// ─── Keyframes ────────────────────────────────
+@keyframes flyAcross {
+  0%   { left: -22%;  top: 16%; opacity: 0; }
+  5%   { opacity: 1; }
+  40%  { top: 10%; }
+  60%  { top: 14%; }
+  90%  { opacity: 0.9; }
+  100% { left: 115%; top: 8%;  opacity: 0; }
+}
+
+@keyframes driftCloud {
+  from { transform: translateX(0); }
+  to   { transform: translateX(110vw); }
+}
+
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(30px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -198,11 +255,6 @@ onUnmounted(() => clearTimeout(timer))
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-14px); }
 }
 
 // ─── Mobile ───────────────────────────────────
@@ -219,13 +271,12 @@ onUnmounted(() => clearTimeout(timer))
     opacity: 0.6;
   }
 
-  .hero__airplane {
-    left: -20%;
-    opacity: 0.3;
+  .hero__airplane-wrap {
+    top: 20%;
   }
 
-  .hero__city {
-    transform: translateX(-50%) scale(1.5);
+  .hero__airplane {
+    width: 70px;
   }
 }
 </style>
